@@ -37,7 +37,6 @@ export default class KeyboardState {
 
     listenTo(window) {
         ['keydown', 'keyup'].forEach(eventName => {
-            // TODO maybe need arrow function?
             window.addEventListener(eventName, event => this.handleEvent(event))
         })
     }
