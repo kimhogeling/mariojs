@@ -1,48 +1,40 @@
-import Keyboard from './KeyboardState.js'
+import Camera from './Camera.js'
 import Timer from './Timer.js'
 import { createMario } from './entities.js'
 import { loadLevel } from './loaders.js'
-import { createCollisionLayer } from './layers.js'
+import { createCollisionLayer, createCameraLayer } from './layers.js'
+import { setupKeyboard } from './input.js'
+import { setupMouseControl } from './debug.js'
 
 const canvas = document.getElementById('screen')
 const context = canvas.getContext('2d')
-// context.scale(1.5, 1.5)
 
 Promise.all([
     createMario(),
     loadLevel('1-1')
 ])
 .then(([mario, level]) => {
+    const cam = new Camera()
 
-    const gravity = 2000
-    mario.pos.set(64, 64)
+    mario.pos.set(16, 16)
 
-    level.comp.layers.push(createCollisionLayer(level))
+    level.comp.layers.push(
+        createCollisionLayer(level),
+        createCameraLayer(cam)
+    )
 
     level.entities.add(mario)
 
-    const SPACE = 32
-    const input = new Keyboard()
-    input.addMapping(SPACE, keyState => {
-        mario.jump[keyState ? 'start' : 'cancel']()
-    })
+    const input = setupKeyboard(mario)
     input.listenTo(window)
 
     const timer = new Timer()
     timer.update = function update(deltaTime) {
         level.update(deltaTime)
-        level.comp.draw(context)
-        mario.vel.y += gravity * deltaTime
+        level.comp.draw(context, cam)
     }
 
-    timer.start();
+    timer.start()
 
-    ['mousedown', 'mousemove'].forEach(eventName => {
-        canvas.addEventListener(eventName, ({ buttons, offsetX, offsetY }) => {
-            if (buttons === 1) {
-                mario.vel.set(0, 0)
-                mario.pos.set(offsetX, offsetY)
-            }
-        })
-    })
+    setupMouseControl(canvas, mario, cam)
 })

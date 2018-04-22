@@ -6,7 +6,7 @@ export default class Entity {
         this.vel = new Vec2(0, 0)
         this.size = new Vec2(0, 0)
 
-        // to compose everything each entity can do, e.g. mario can jump
+        // to compose everything each entity can do, e.g. mario can walk and jump
         this.traits = []
     }
 

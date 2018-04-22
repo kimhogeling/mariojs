@@ -5,27 +5,81 @@ export default class TileCollider {
         this.tiles = new TileResolver(tileMatrix)
     }
 
-    checkY(entity) {
-        const match = this.tiles.matchByPosition(entity.pos.x, entity.pos.y)
-
-        if (!match || !match.tile || match.tile.name !== 'ground') {
+    /**
+     * @param {Entity} entity
+     */
+    checkX({ pos, size, vel }) {
+        if (vel.x === 0) {
             return
         }
 
-        if (entity.vel.y > 0) {
-            if (entity.pos.y > match.y1) {
-                entity.pos.y = match.y1
-                entity.vel.y = 0
+        const x = vel.x > 0
+            ? pos.x + size.x
+            : pos.x
+
+        this.tiles.searchByRange(
+            x,
+            x,
+            pos.y,
+            pos.y + size.y
+        )
+        .forEach(({ tile, x1, x2 }) => {
+            if (!tile || tile.type !== 'ground') {
+                return
             }
-        } else if (entity.vel.y < 0) {
-            if (entity.pos.y < match.y2) {
-                entity.pos.y = match.y2
-                entity.vel.y = 0
+
+            if (vel.x > 0) {
+                if ((
+                    pos.x + size.x
+                ) > x1) {
+                    pos.x = x1 - size.x
+                    vel.x = 0
+                }
+                return
             }
-        }
+
+            if (vel.x < 0 && pos.x < x2) {
+                pos.x = x2
+                vel.x = 0
+            }
+        })
     }
 
-    test(entity) {
-        this.checkY(entity)
+    /**
+     * @param {Entity} entity
+     */
+    checkY({ pos, size, vel }) {
+        if (vel.y === 0) {
+            return
+        }
+
+        const y = vel.y > 0
+            ? pos.y + size.y
+            : pos.y
+
+        this.tiles.searchByRange(
+            pos.x,
+            pos.x + size.x,
+            y,
+            y
+        )
+        .forEach(({ tile, y1, y2 }) => {
+            if (!tile || tile.type !== 'ground') {
+                return
+            }
+
+            if (vel.y > 0) {
+                if (pos.y + size.y > y1) {
+                    pos.y = y1 - size.y
+                    vel.y = 0
+                }
+                return
+            }
+
+            if (vel.y < 0 && pos.y < y2) {
+                pos.y = y2
+                vel.y = 0
+            }
+        })
     }
 }

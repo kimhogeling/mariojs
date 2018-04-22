@@ -13,7 +13,7 @@ export class Matrix {
     }
 
     get(x, y) {
-        return this.grid[x][y]
+        return (this.grid[x] && this.grid[x][y]) || undefined
     }
 
     set(x, y, value) {

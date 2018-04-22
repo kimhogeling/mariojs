@@ -1,7 +1,7 @@
 export default class Timer {
     constructor() {
-        const fps = 60
-        const deltaTime = 1 / fps
+        // 60 fps
+        const deltaTime = 1 / 60
 
         let accumulatedTime = 0
         let lastTime = 0

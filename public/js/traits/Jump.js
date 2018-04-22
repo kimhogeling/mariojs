@@ -1,4 +1,4 @@
-import { Trait } from './Trait.js'
+import Trait from './Trait.js'
 
 export default class Jump extends Trait {
     constructor() {
@@ -10,6 +10,7 @@ export default class Jump extends Trait {
         this.engageTime = 0
     }
 
+    // TODO is start dead?
     start() {
         this.engageTime = this.duration
     }
