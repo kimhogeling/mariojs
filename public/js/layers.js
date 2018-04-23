@@ -12,9 +12,10 @@ export function createBackgroundLayer(level, sprites) {
     let endIndex
 
     function redraw(drawFrom, drawTo) {
-        if (drawFrom === startIndex && drawTo === endIndex) {
-            return
-        }
+        // TODO remove this guard?
+        // if (drawFrom === startIndex && drawTo === endIndex) {
+        //     return
+        // }
 
         startIndex = drawFrom
         endIndex = drawTo
@@ -24,7 +25,11 @@ export function createBackgroundLayer(level, sprites) {
             if (col) {
                 // TODO don't make functions in loops
                 col.forEach((tile, y) => {
-                    sprites.drawTile(tile.name, context, x - startIndex, y)
+                    if (sprites.animations.has(tile.name)) {
+                        sprites.drawAnim(tile.name, context, x - startIndex, y, level.totalTime)
+                    } else {
+                        sprites.drawTile(tile.name, context, x - startIndex, y)
+                    }
                 })
             }
         }
@@ -92,8 +97,12 @@ export function createCollisionLayer(level) {
         resolvedTiles.forEach(({ x, y }) => {
             context.beginPath()
             context.rect(
-                (x * tileSize) - cam.pos.x,
-                (y * tileSize) - cam.pos.y,
+                (
+                    x * tileSize
+                ) - cam.pos.x,
+                (
+                    y * tileSize
+                ) - cam.pos.y,
                 tileSize,
                 tileSize
             )

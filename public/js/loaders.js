@@ -1,6 +1,7 @@
 import Level from './Level.js'
 import { createBackgroundLayer, createSpriteLayer } from './layers.js'
 import SpriteSheet from './SpriteSheet.js'
+import { createAnim } from './anim.js'
 
 export function loadImage(url) {
     return new Promise(resolve => {
@@ -13,7 +14,8 @@ export function loadImage(url) {
 }
 
 function loadJSON(url) {
-    return fetch(url).then(r => r.json())
+    return fetch(url)
+    .then(r => r.json())
 }
 
 function createTiles(level, backgrounds) {
@@ -36,18 +38,22 @@ function createTiles(level, backgrounds) {
             if (range.length === 4) {
                 const [xStart, xLen, yStart, yLen] = range
                 applyRange(background, xStart, xLen, yStart, yLen)
-            } else if (range.length === 3) {
-                const [xStart, xLen, yStart] = range
-                applyRange(background, xStart, xLen, yStart, 1)
-            } else if (range.length === 2) {
-                const [xStart, yStart] = range
-                applyRange(background, xStart, 1, yStart, 1)
+            } else {
+                if (range.length === 3) {
+                    const [xStart, xLen, yStart] = range
+                    applyRange(background, xStart, xLen, yStart, 1)
+                } else {
+                    if (range.length === 2) {
+                        const [xStart, yStart] = range
+                        applyRange(background, xStart, 1, yStart, 1)
+                    }
+                }
             }
         })
     })
 }
 
-function loadSpriteSheet(spriteSheetName) {
+export function loadSpriteSheet(spriteSheetName) {
     return loadJSON(`/sprites/${spriteSheetName}.json`)
     .then(sheetSpec => Promise.all([
         sheetSpec,
@@ -55,12 +61,29 @@ function loadSpriteSheet(spriteSheetName) {
     ]))
     .then(([sheetSpec, image]) => {
         const sprites = new SpriteSheet(image, sheetSpec.tileW, sheetSpec.tileH)
-        sheetSpec.tiles.forEach(
-            ({ name, index }) => {
-                const [x, y] = index
-                sprites.defineTile(name, x, y)
-            }
-        )
+
+        if (sheetSpec.tiles) {
+            sheetSpec.tiles.forEach(
+                ({ name, index }) => {
+                    const [x, y] = index
+                    sprites.defineTile(name, x, y)
+                }
+            )
+        }
+
+        if (sheetSpec.frames) {
+            sheetSpec.frames.forEach(frameSpec => {
+                sprites.define(frameSpec.name, ...frameSpec.rect)
+            })
+        }
+
+        if (sheetSpec.animations) {
+            sheetSpec.animations.forEach(animSpec => {
+                const animation = createAnim(animSpec.frames, animSpec.frameLen)
+                sprites.defineAnim(animSpec.name, animation)
+            })
+        }
+
         return sprites
     })
 }
