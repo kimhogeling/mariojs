@@ -6,19 +6,27 @@ const START_OR_CANCEL = {
     1: 'start'
 }
 
-export function setupKeyboard({ jump, walk }) {
+export function setupKeyboard(mario) {
     const keyboard = new Keyboard()
 
-    keyboard.addKeyFunction('Space', keyState => {
-        jump[START_OR_CANCEL[keyState]]()
+    keyboard.addKeyFunction('KeyK', keyState => {
+        mario.turbo(keyState)
     })
 
-    keyboard.addKeyFunction('ArrowLeft', keyState => {
-        walk.dir = -keyState
+    keyboard.addKeyFunction('KeyJ', keyState => {
+        mario.jump[START_OR_CANCEL[keyState]]()
     })
 
-    keyboard.addKeyFunction('ArrowRight', keyState => {
-        walk.dir = keyState
+    keyboard.addKeyFunction('KeyA', keyState => {
+        mario.walk.dir += keyState
+            ? -1
+            : 1
+    })
+
+    keyboard.addKeyFunction('KeyD', keyState => {
+        mario.walk.dir += keyState
+            ? 1
+            : -1
     })
 
     return keyboard

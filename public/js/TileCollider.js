@@ -1,4 +1,5 @@
 import TileResolver from './TileResolver.js'
+import { Sides } from './Entity.js'
 
 export default class TileCollider {
     constructor(tileMatrix) {
@@ -48,18 +49,18 @@ export default class TileCollider {
     /**
      * @param {Entity} entity
      */
-    checkY({ pos, size, vel }) {
-        if (vel.y === 0) {
+    checkY(entity) {
+        if (entity.vel.y === 0) {
             return
         }
 
-        const y = vel.y > 0
-            ? pos.y + size.y
-            : pos.y
+        const y = entity.vel.y > 0
+            ? entity.pos.y + entity.size.y
+            : entity.pos.y
 
         this.tiles.searchByRange(
-            pos.x,
-            pos.x + size.x,
+            entity.pos.x,
+            entity.pos.x + entity.size.x,
             y,
             y
         )
@@ -68,17 +69,21 @@ export default class TileCollider {
                 return
             }
 
-            if (vel.y > 0) {
-                if (pos.y + size.y > y1) {
-                    pos.y = y1 - size.y
-                    vel.y = 0
+            if (entity.vel.y > 0) {
+                if (entity.pos.y + entity.size.y > y1) {
+                    entity.pos.y = y1 - entity.size.y
+                    entity.vel.y = 0
+
+                    entity.obstruct(Sides.BOTTOM)
                 }
                 return
             }
 
-            if (vel.y < 0 && pos.y < y2) {
-                pos.y = y2
-                vel.y = 0
+            if (entity.vel.y < 0 && entity.pos.y < y2) {
+                entity.pos.y = y2
+                entity.vel.y = 0
+
+                entity.obstruct(Sides.TOP)
             }
         })
     }
