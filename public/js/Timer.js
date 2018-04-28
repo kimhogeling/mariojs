@@ -1,12 +1,9 @@
 export default class Timer {
-    constructor() {
-        // 60 fps
-        const deltaTime = 1 / 60
-
+    constructor(deltaTime = 1 / 60) {
         let accumulatedTime = 0
         let lastTime = 0
 
-        this.updateProxy = time => {
+        this.updateProxy = (time) => {
             accumulatedTime += (
                 time - lastTime
             ) / 1000
@@ -16,7 +13,6 @@ export default class Timer {
             }
 
             while (accumulatedTime > deltaTime) {
-                // simply monkey patched this in main.js
                 this.update(deltaTime)
                 accumulatedTime -= deltaTime
             }

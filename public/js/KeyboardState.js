@@ -1,44 +1,47 @@
-const RELEASED = 0
 const PRESSED = 1
+const RELEASED = 0
 
 export default class KeyboardState {
     constructor() {
+        // Holds the current state of a given key
         this.keyStates = new Map()
-        this.keyFunctions = new Map()
+
+        // Holds the callback functions for a key code
+        this.keyMap = new Map()
     }
 
-    /**
-     * @param {Number} key
-     * @param {function} fn - Callback function to call on key press
-     */
-    addKeyFunction(key, fn) {
-        this.keyFunctions.set(key, fn)
+    addMapping(code, callback) {
+        this.keyMap.set(code, callback)
     }
 
     handleEvent(event) {
-        const key = event.code
+        const { code } = event
 
-        if (!this.keyFunctions.has(key)) {
-            // key code is not mapped
+        if (!this.keyMap.has(code)) {
+            // Did not have key mapped.
             return
         }
 
-        // prevents browser events like scrolling on key down
         event.preventDefault()
 
-        const keyState = event.type === 'keydown' ? PRESSED : RELEASED
+        const keyState = event.type === 'keydown'
+            ? PRESSED
+            : RELEASED
 
-        if (this.keyStates.get(key) === keyState) {
+        if (this.keyStates.get(code) === keyState) {
             return
         }
 
-        this.keyStates.set(key, keyState)
-        this.keyFunctions.get(key)(keyState)
+        this.keyStates.set(code, keyState)
+
+        this.keyMap.get(code)(keyState)
     }
 
     listenTo(window) {
         ['keydown', 'keyup'].forEach(eventName => {
-            window.addEventListener(eventName, event => this.handleEvent(event))
+            window.addEventListener(eventName, event => {
+                this.handleEvent(event)
+            })
         })
     }
 }

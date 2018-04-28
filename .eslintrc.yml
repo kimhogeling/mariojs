@@ -8,6 +8,8 @@ extends: airbnb
 rules:
   # we want to leave out parentheses whenever we like at arrow functions
   arrow-parens: off
+  # we want need empty superclass methods
+  class-methods-use-this: off
   # no trailing commas
   comma-dangle:
     - warn
@@ -39,14 +41,14 @@ rules:
   no-extraneous-dependencies: off
   # We use eval for the custom views - we should evaluate how "evil" this is
   no-eval: off
-  # warn instead of error
-  no-lonely-if: warn
+  # sometimes lonely ifs are more readable
+  no-lonely-if: off
   # allow overwriting properties of arguments
   no-param-reassign: off
-  # don't error, just warn
-  no-plusplus: warn
-  # don't error, just warn
-  no-restricted-syntax: warn
+  # we want to use plusplus
+  no-plusplus: off
+  # turn off, because we use generators
+  no-restricted-syntax: off
   # we need template curly inside of string for the custom views
   no-template-curly-in-string: off
   # don't just warn, instead error if unused vars

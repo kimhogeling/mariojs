@@ -8,23 +8,14 @@ export default class TileResolver {
         return Math.floor(pos / this.tileSize)
     }
 
-    /**
-     * Calculate the range of all colliding tiles
-     * @param pos1
-     * @param pos2
-     * @returns {Array}
-     */
     toIndexRange(pos1, pos2) {
         const pMax = Math.ceil(pos2 / this.tileSize) * this.tileSize
         const range = []
         let pos = pos1
-
-        // TODO cleanup by replacing this loop with help of % operator
         do {
             range.push(this.toIndex(pos))
             pos += this.tileSize
         } while (pos < pMax)
-
         return range
     }
 
@@ -51,30 +42,24 @@ export default class TileResolver {
         }
     }
 
-    // TODO is searchByPosition dead?
     searchByPosition(posX, posY) {
         return this.getByIndex(
             this.toIndex(posX),
-            this.toIndex(posY)
-        )
+            this.toIndex(posY))
     }
 
     searchByRange(x1, x2, y1, y2) {
-        // TODO clean this up with filter and map?
         const matches = []
-
         this.toIndexRange(x1, x2)
-        .forEach(
-            iX => this.toIndexRange(y1, y2)
-            .forEach(
-                iY => {
-                    const match = this.getByIndex(iX, iY)
-                    if (match) {
-                        matches.push(match)
-                    }
+        .forEach(indexX => {
+            this.toIndexRange(y1, y2)
+            .forEach(indexY => {
+                const match = this.getByIndex(indexX, indexY)
+                if (match) {
+                    matches.push(match)
                 }
-            )
-        )
+            })
+        })
         return matches
     }
 }

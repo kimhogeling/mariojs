@@ -12,14 +12,14 @@ export default class SpriteSheet {
     }
 
     define(name, x, y, width, height) {
-        const buffers = [false, true].map(mirror => {
+        const buffers = [false, true].map(flip => {
             const buffer = document.createElement('canvas')
             buffer.width = width
             buffer.height = height
 
             const context = buffer.getContext('2d')
 
-            if (mirror) {
+            if (flip) {
                 context.scale(-1, 1)
                 context.translate(-width, 0)
             }
@@ -33,8 +33,7 @@ export default class SpriteSheet {
                 0,
                 0,
                 width,
-                height
-            )
+                height)
 
             return buffer
         })
@@ -46,13 +45,10 @@ export default class SpriteSheet {
         this.define(name, x * this.width, y * this.height, this.width, this.height)
     }
 
-    draw(name, context, x, y, mirror = false) {
-        const index = mirror
+    draw(name, context, x, y, flip = false) {
+        const buffer = this.tiles.get(name)[flip
             ? 1
-            : 0
-
-        const buffer = this.tiles.get(name)[index]
-
+            : 0]
         context.drawImage(buffer, x, y)
     }
 

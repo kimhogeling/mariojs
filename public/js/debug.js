@@ -1,50 +1,25 @@
-function moveEntity(entity, x, y) {
-    entity.vel.set(0, 0)
-    entity.pos.set(x, y)
-}
-
-function moveCamera(cam, x = false, y = false) {
-    if (x) {
-        cam.pos.x += x
-    }
-    if (y) {
-        cam.pos.y += y
-    }
-}
-
-/**
- * @param {HTMLElement} canvas
- * @param {Entity} entity
- * @param {Camera} cam
- */
-export function setupMouseControl(canvas, entity, cam) {
-    // for time travel
-    let lastEvent
-
-    canvas.addEventListener('contextmenu', event => event.preventDefault());
+export function setupMouseControl(canvas, entity, camera) {
+    let lastEvent;
 
     ['mousedown', 'mousemove'].forEach(eventName => {
         canvas.addEventListener(eventName, event => {
             if (event.buttons === 1) {
-                moveEntity(
-                    entity,
-                    event.offsetX + cam.pos.x,
-                    event.offsetY + cam.pos.y
-                )
+                entity.vel.set(0, 0)
+                entity.pos.set(
+                    event.offsetX + camera.pos.x,
+                    event.offsetY + camera.pos.y)
+            } else {
+                if (event.buttons === 2
+                    && lastEvent && lastEvent.buttons === 2
+                    && lastEvent.type === 'mousemove') {
+                    camera.pos.x -= event.offsetX - lastEvent.offsetX
+                }
             }
-            if (
-                event.buttons === 2
-                && lastEvent
-                && lastEvent.buttons === 2
-                && lastEvent.type === 'mousemove'
-            ) {
-                moveCamera(
-                    cam,
-                    event.offsetX - lastEvent.offsetX
-                )
-            }
-
             lastEvent = event
         })
+    })
+
+    canvas.addEventListener('contextmenu', event => {
+        event.preventDefault()
     })
 }

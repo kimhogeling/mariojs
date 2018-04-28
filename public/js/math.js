@@ -1,19 +1,22 @@
-
 export class Matrix {
     constructor() {
         this.grid = []
     }
 
-    forEach(fn) {
+    forEach(callback) {
         this.grid.forEach((column, x) => {
             column.forEach((value, y) => {
-                fn(value, x, y)
+                callback(value, x, y)
             })
         })
     }
 
     get(x, y) {
-        return (this.grid[x] && this.grid[x][y]) || undefined
+        const col = this.grid[x]
+        if (col) {
+            return col[y]
+        }
+        return undefined
     }
 
     set(x, y, value) {
